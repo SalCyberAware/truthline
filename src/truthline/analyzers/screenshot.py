@@ -47,7 +47,7 @@ COMMON_SCREEN_SIZES = {
 
 WORK_WIDTH = 400            # analysis is done on a copy scaled to this width
 SEAM_DISTANCE = 60          # RGB distance between neighbouring uniform rows that counts as a hard seam
-SATURATED = 90              # max(R,G,B) - min(R,G,B) at or above this counts as "colored bubble" pixel
+SATURATED = 60              # max(R,G,B) - min(R,G,B) at or above this counts as a "colored bubble" pixel (pale dark-mode bubbles sit near 80)
 ALIGN_TOLERANCE = 0.03      # outgoing bubble right edges may differ by this fraction of width (tails, rounding)
 MIN_BUBBLES = 3             # need at least this many outgoing bubbles to judge alignment
 

@@ -55,6 +55,20 @@ Mix full-screen captures with 2 or 3 cropped ones. Real people crop screenshots,
 - Signed consent forms stay with you, outside the project folder.
 - GitHub only gets the manifest: file names, categories, sources, consent numbers and fingerprints.
 
+## Can we get samples from the internet? (asked 19 Oct 2026)
+- **Real samples: no.** A screenshot found online has no known answer (it may itself be fake or re-saved), it is
+  someone else's private conversation, and copying it usually breaks site terms. Our search also found no public
+  labeled dataset of real/fake chat screenshots; the closest open project says the same.
+- **Fabricated and AI samples: yes, we make them.** Public fake-text generator sites and AI image tools, with harmless
+  text we type and the tool name recorded in `source`.
+- **Synthetic samples: unlimited, from our own renderer.** `benchmark/render_synthetic.py` draws phone-sized chat
+  screenshots with flaws we plant on purpose (status-bar seam, crooked bubbles, empty status bar, editor tag):
+
+      python benchmark/render_synthetic.py --out benchmark/samples/synthetic --count 12
+
+  They are labeled `synthetic`, kept out of the fabricated catch rate (they would flatter it), and used to prove each
+  analyzer check actually fires. Same seed, same image, so anyone can reproduce the set.
+
 ## What happens next
 Once 20 samples are in, we read the results together. The misses tell us exactly which stronger check to build next:
 status-bar layout per phone model, bubble shapes per app, fonts, the clock against the file's timestamp.

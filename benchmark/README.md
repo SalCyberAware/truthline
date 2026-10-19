@@ -10,6 +10,7 @@ benchmark/
     real/           files that are what they claim to be (consented)
     fabricated/     edited or generator-made files (no AI involved)
     ai_generated/   files produced by an AI tool
+    synthetic/      drawn by render_synthetic.py with planted flaws; analyzer tests only, excluded from catch rates
   manifest.csv      one row per sample: path, category, claimed_type, source, consent_ref, notes
   run_benchmark.py  runs the pipeline over the manifest and prints per-category results
 ```
