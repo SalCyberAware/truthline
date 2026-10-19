@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "truthline"
-version = "0.0.1"
+version = "0.0.3"
 description = "Open-source verification of AI-generated and fabricated media, with reporting for schools, nonprofits and the public."
 readme = "README.md"
 requires-python = ">=3.10"
