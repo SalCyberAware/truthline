@@ -71,13 +71,15 @@ class MetadataAnalyzer:
                 details={"software": software_name, "hints": [h for h in EDITOR_HINTS if h in software]},
             ))
 
-        if any(h in software for h in SCREENSHOT_HINTS):
+        # Only the Software tag counts here. Free-text chunks (Comment, Description) are
+        # too easy to plant: a word like "screenshot" in a comment proves nothing.
+        if any(h in software_name.lower() for h in SCREENSHOT_HINTS):
             signals.append(Signal(
                 analyzer=self.name, key="metadata.screenshot_tag",
                 direction=Direction.AUTHENTIC, strength=Strength.WEAK,
-                summary="The file carries a screenshot tag from the operating system.",
+                summary="The file's Software tag names a screenshot tool.",
                 why_it_matters="Weak evidence it was captured as a screenshot on a device, though such tags can be copied.",
-                details={"software": exif.get("Software", "")},
+                details={"software": software_name},
             ))
 
         if has_camera:

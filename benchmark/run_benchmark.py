@@ -52,6 +52,8 @@ def main(manifest: Path) -> int:
         if c:
             catch = sum(c[g] for g in FAB_GRADES) / sum(c.values())
             print(f"Catch rate [{cat}]: {catch:.1%}")
+    if by_cat.get("synthetic"):
+        print("\n(synthetic samples are shown above for information only; they are not part of any catch rate)")
     return 0
 
 

@@ -86,3 +86,20 @@ def test_analyzer_never_emits_authentic_or_non_weak_signals(tmp_path):
         for s in _run(p).signals:
             assert s.direction != Direction.AUTHENTIC
             assert s.strength == Strength.WEAK
+
+
+def test_screenshot_word_in_comment_is_not_a_screenshot_tag(tmp_path):
+    from PIL import PngImagePlugin
+
+    from truthline.analyzers.metadata import MetadataAnalyzer
+    p = tmp_path / "c.png"
+    info = PngImagePlugin.PngInfo()
+    info.add_text("Comment", "this is a screenshot, honest")
+    Image.new("RGB", (W, H), (255, 255, 255)).save(p, pnginfo=info)
+    r = MetadataAnalyzer().analyze(Submission.from_path(p, claimed_type="screenshot"))
+    assert "metadata.screenshot_tag" not in {s.key for s in r.signals}
+    info2 = PngImagePlugin.PngInfo()
+    info2.add_text("Software", "Android Screenshot")
+    Image.new("RGB", (W, H), (255, 255, 255)).save(p, pnginfo=info2)
+    r2 = MetadataAnalyzer().analyze(Submission.from_path(p, claimed_type="screenshot"))
+    assert "metadata.screenshot_tag" in {s.key for s in r2.signals}
