@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "truthline"
+version = "0.0.1"
+description = "Open-source verification of AI-generated and fabricated media, with reporting for schools, nonprofits and the public."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "Truthline contributors" }]
+dependencies = [
+  "pillow>=10",
+]
+
+[project.optional-dependencies]
+c2pa = ["c2pa-python>=0.6"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.scripts]
+truthline = "truthline.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"truthline.reports" = ["templates/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
