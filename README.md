@@ -4,7 +4,7 @@
 
 Truthline lets a school front office, a nonprofit bookkeeper, a small business or a parent submit a suspicious image, screenshot, audio clip or document and get back, in plain language, what the evidence says: likely authentic, likely altered, likely AI-generated, or inconclusive. It then assembles the report the right authority expects (FBI, IC3, NCMEC CyberTipline, school tip lines, FTC) and the evidence-preservation request a police officer can send to a platform.
 
-> **Status: v0.0.1 skeleton.** The pipeline runs, the contract is stable, and two analyzers exist (file metadata, C2PA Content Credentials). Nothing here is ready to make decisions with. See [Roadmap](#roadmap).
+> **Status: v0.0.2 skeleton.** The pipeline runs, the contract is stable, and three analyzers exist (file metadata, C2PA Content Credentials, and first-pass chat-screenshot checks that are weak evidence only). Nothing here is ready to make decisions with. See [Roadmap](#roadmap).
 
 ## The rules this project is built on
 
@@ -43,7 +43,8 @@ file -> [safety gate] -> analyzers (run in parallel, each returns named Signals)
 
 | Phase | What lands | Status |
 | --- | --- | --- |
-| 0.0.1 | Contract, pipeline, metadata + C2PA analyzers, CLI, benchmark harness | here |
+| 0.0.1 | Contract, pipeline, metadata + C2PA analyzers, CLI, benchmark harness | done |
+| 0.0.2 | First-pass screenshot checks (dimensions, status bar, bubble alignment); stricter rules R5 and R9 | here |
 | 0.1 | Chat-screenshot forensics (UI templates, font metrics, clock checks), image forensics (ELA, double-JPEG), small open-model ensemble, report drafts for FBI/IC3/NCMEC/Safe2Tell/FTC | next |
 | 0.2 | Audio analyzer, web interface, self-host package | |
 | 0.3 | Benchmark results published, pilot with schools | |

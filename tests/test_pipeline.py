@@ -22,11 +22,11 @@ def _png(tmp_path: Path, name: str = "a.png", software: str | None = None) -> Pa
 
 
 def test_empty_pipeline_is_inconclusive(tmp_path):
-    sub = Submission.from_path(_png(tmp_path), claimed_type="a screenshot of a text message")
+    sub = Submission.from_path(_png(tmp_path), claimed_type="a photo of a receipt")
     case = run(sub)
     assert case.assessment.grade == Grade.INCONCLUSIVE
     assert len(sub.sha256) == 64
-    # the screenshot analyzer must say it could not run, not pretend it did
+    # the screenshot analyzer must say it does not apply, not pretend it did
     assert any(r.analyzer == "screenshot" and not r.available for r in case.results)
 
 
@@ -93,3 +93,30 @@ def test_case_file_has_hash_and_rules(tmp_path):
     assert d["file"]["sha256"] == case.submission.sha256
     assert d["assessment"]["rules_applied"]
     assert "human_decision_line" in d["assessment"]
+
+
+def test_r5_needs_two_analyzers_and_one_non_weak(tmp_path):
+    weak_two = [
+        AnalyzerResult("a", True, [_sig("a", Direction.AUTHENTIC, Strength.WEAK)]),
+        AnalyzerResult("b", True, [_sig("b", Direction.AUTHENTIC, Strength.WEAK)]),
+    ]
+    assert assess(weak_two, _sub(tmp_path)).grade == Grade.INCONCLUSIVE
+    same_analyzer = [AnalyzerResult("a", True, [
+        _sig("a", Direction.AUTHENTIC, Strength.MODERATE), _sig("a", Direction.AUTHENTIC, Strength.WEAK, "k2")])]
+    assert assess(same_analyzer, _sub(tmp_path)).grade == Grade.INCONCLUSIVE
+    ok = [
+        AnalyzerResult("a", True, [_sig("a", Direction.AUTHENTIC, Strength.MODERATE)]),
+        AnalyzerResult("b", True, [_sig("b", Direction.AUTHENTIC, Strength.WEAK)]),
+    ]
+    assert assess(ok, _sub(tmp_path)).grade == Grade.LIKELY_AUTHENTIC
+
+
+def test_r9_screenshot_never_likely_authentic(tmp_path):
+    ok = [
+        AnalyzerResult("a", True, [_sig("a", Direction.AUTHENTIC, Strength.MODERATE)]),
+        AnalyzerResult("screenshot", True, []),
+        AnalyzerResult("b", True, [_sig("b", Direction.AUTHENTIC, Strength.WEAK)]),
+    ]
+    a = assess(ok, _sub(tmp_path, claimed="a screenshot of a text message"))
+    assert a.grade == Grade.INCONCLUSIVE
+    assert "R9" in a.rules_applied
