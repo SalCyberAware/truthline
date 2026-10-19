@@ -46,7 +46,7 @@ file -> [safety gate] -> analyzers (run in parallel, each returns named Signals)
 | 0.0.1 | Contract, pipeline, metadata + C2PA analyzers, CLI, benchmark harness | done |
 | 0.0.2 | First-pass screenshot checks (dimensions, status bar, bubble alignment); stricter rules R5 and R9 | done |
 | 0.0.3 | Agency report drafts: FBI, IC3, NCMEC, school tip line, FTC, police preservation letter (`truthline draft`) | here |
-| 0.1 | Chat-screenshot forensics (UI templates, font metrics, clock checks), image forensics (ELA, double-JPEG), small open-model ensemble, report drafts for FBI/IC3/NCMEC/Safe2Tell/FTC | next |
+| 0.1 | Chat-screenshot forensics (UI templates, font metrics, clock checks), image forensics (ELA, double-JPEG), small open-model ensemble | next |
 | 0.2 | Audio analyzer, web interface, self-host package | |
 | 0.3 | Benchmark results published, pilot with schools | |
 
