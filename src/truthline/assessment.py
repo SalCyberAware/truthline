@@ -20,13 +20,17 @@ R2  A STRONG AUTHENTIC provenance signal with no FABRICATED signals yields VERIF
 R3  One STRONG FABRICATED signal yields LIKELY_FABRICATED; with any additional MODERATE
     or STRONG fabrication signal from a *different analyzer*, VERY_LIKELY_FABRICATED.
 R4  Two MODERATE FABRICATED signals from different analyzers yield LIKELY_FABRICATED.
-R5  Two or more AUTHENTIC signals (any strength) and zero FABRICATED/AI signals yield
-    LIKELY_AUTHENTIC.
+R5  Two or more AUTHENTIC signals from at least two different analyzers, at least one of
+    them MODERATE or stronger, and zero FABRICATED/AI signals yield LIKELY_AUTHENTIC.
+    (Weak signals alone never get here: R7.)
 R6  Anything else is INCONCLUSIVE.
 R7  WEAK signals never change a grade on their own; they are shown as context.
 R8  If the analyzers that matter most for the claimed type were unavailable
     (e.g. the screenshot analyzer for a claimed screenshot), the grade is capped
     at INCONCLUSIVE unless provenance decided it, and the case says why.
+R9  A claimed screenshot is never graded LIKELY_AUTHENTIC from the image alone,
+    because a screenshot is trivially re-created. Only signed provenance (R2) or
+    the original device can confirm one. The case says so.
 """
 
 from __future__ import annotations
@@ -116,7 +120,12 @@ def assess(results: list[AnalyzerResult], submission: Submission) -> Assessment:
         grade = Grade.LIKELY_FABRICATED
         rules.append("R4")
         reasoning = "Two independent moderate fabrication signals."
-    elif len(auth_all) >= 2 and not fab_or_ai_all:
+    elif (
+        len(auth_all) >= 2
+        and len({s.analyzer for s in auth_all}) >= 2
+        and any(s.strength != Strength.WEAK for s in auth_all)
+        and not fab_or_ai_all
+    ):
         grade = Grade.LIKELY_AUTHENTIC
         rules.append("R5")
         reasoning = "Multiple authenticity signals and no contradicting evidence."
@@ -131,6 +140,12 @@ def assess(results: list[AnalyzerResult], submission: Submission) -> Assessment:
             rules.append("R8")
             reasoning += " Capped at inconclusive because the screenshot analyzer could not run."
         grade = Grade.INCONCLUSIVE if grade in (Grade.LIKELY_AUTHENTIC,) else grade
+
+    if "screenshot" in claimed and grade == Grade.LIKELY_AUTHENTIC and not decided_by_provenance:
+        grade = Grade.INCONCLUSIVE
+        capped = True
+        rules.append("R9")
+        reasoning += " A screenshot cannot be confirmed authentic from the image alone; the original device can."
 
     next_steps = _next_steps(grade, submission, unavailable)
     return Assessment(
