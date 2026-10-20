@@ -64,3 +64,20 @@ def test_refuses_bad_consent_reference_and_duplicates_and_non_images(tmp_path):
     doc.write_bytes(b"%PDF")
     with pytest.raises(add_sample_mod.SampleError, match="only images"):
         _add(tmp_path, bench, doc)
+
+
+def test_cli_benchmark_dir_flag_and_env_var(tmp_path, monkeypatch):
+    f = _img(tmp_path, "cli.png", (9, 9, 9))
+    elsewhere = tmp_path / "data"
+    rc = add_sample_mod.main([str(f), "--category", "fabricated", "--source", "test tool", "--consent-ref", "CR-001",
+                              "--confirm-rules", "--benchmark-dir", str(elsewhere)])
+    assert rc == 0
+    assert (elsewhere / "samples" / "fabricated" / "fabricated-001.png").exists()
+    assert (elsewhere / "manifest.csv").exists()
+
+    other = tmp_path / "envdata"
+    monkeypatch.setenv("TRUTHLINE_BENCHMARK_DIR", str(other))
+    f2 = _img(tmp_path, "cli2.png", (8, 8, 8))
+    rc = add_sample_mod.main([str(f2), "--category", "real", "--source", "test", "--consent-ref", "CR-002", "--confirm-rules"])
+    assert rc == 0
+    assert (other / "samples" / "real" / "real-001.png").exists()

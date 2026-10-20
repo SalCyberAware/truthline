@@ -50,6 +50,17 @@ Mix full-screen captures with 2 or 3 cropped ones. Real people crop screenshots,
 4. Commit **only `manifest.csv`**. The sample files themselves are blocked from Git on purpose (see `.gitignore`).
    Only fingerprints and results are ever public.
 
+## Windows tip: keep samples outside OneDrive and Documents
+Windows' ransomware shield can block Python from writing into Documents, and OneDrive would sync your sample
+images to the cloud. Make a data folder instead, for example `C:\truthline-data`, and add `--benchmark-dir`:
+
+    python benchmark\add_sample.py fake-iphone-01.png --category fabricated --source "site name, iPhone style" --consent-ref CR-001 --confirm-rules --benchmark-dir C:\truthline-data
+    python benchmark\run_benchmark.py C:\truthline-data\manifest.csv
+
+When you want the manifest (file names and fingerprints only, never images) in the project, copy
+`C:\truthline-data\manifest.csv` over `benchmark\manifest.csv` using File Explorer, then commit it.
+See `docs/windows-setup.md` for the full Windows setup.
+
 ## Where things live
 - The image files stay on your computer under `benchmark/samples/`. Never upload them to GitHub.
 - Signed consent forms stay with you, outside the project folder.
