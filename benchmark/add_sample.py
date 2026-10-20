@@ -8,7 +8,13 @@ What it does, so you can check it:
   1. refuses unless you pass --confirm-rules (consent form signed; nothing from the never-list)
   2. refuses if the file is not an image, or its SHA-256 is already in the manifest
   3. copies the file to benchmark/samples/<category>/<category>-NNN.<ext>
-  4. appends one row to benchmark/manifest.csv (including the SHA-256)
+  4. appends one row to <benchmark dir>/manifest.csv (including the SHA-256)
+
+By default the benchmark dir is this script's own folder (benchmark/). To keep sample images OUT of a
+cloud-synced or protected folder (OneDrive, Documents), point it somewhere else:
+
+  python benchmark/add_sample.py x.png ... --benchmark-dir C:\truthline-data
+  (or set the environment variable TRUTHLINE_BENCHMARK_DIR)
 
 The samples folder is git-ignored: the files stay on your computer. Only manifest.csv is committed.
 """
@@ -18,6 +24,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import os
 import re
 import shutil
 import sys
@@ -105,10 +112,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--claimed-type", default=DEFAULT_CLAIM)
     p.add_argument("--notes", default="", help="method used, e.g. 'edited the time in an image editor'")
     p.add_argument("--confirm-rules", action="store_true")
+    p.add_argument("--benchmark-dir", type=Path,
+                   help="where samples/ and manifest.csv live (default: env TRUTHLINE_BENCHMARK_DIR, else this script's folder)")
     args = p.parse_args(argv)
+    bench = args.benchmark_dir or (Path(os.environ["TRUTHLINE_BENCHMARK_DIR"]) if os.environ.get("TRUTHLINE_BENCHMARK_DIR")
+                                   else Path(__file__).resolve().parent)
     try:
+        bench.mkdir(parents=True, exist_ok=True)
         dest = add_sample(args.file, args.category, args.source, args.consent_ref, args.confirm_rules,
-                          Path(__file__).resolve().parent, args.claimed_type, args.notes)
+                          bench, args.claimed_type, args.notes)
     except SampleError as exc:
         print(f"refused: {exc}", file=sys.stderr)
         return 2
